@@ -19,6 +19,8 @@ support (CHF is the default currency).
 - **Delete** – remove an entry; deleting a person removes their entries too.
 - **Multi-currency** – CHF (default), EUR, USD, GBP, INR, JPY, AUD, CAD. The
   symbol in the top bar opens the picker.
+- **Appearance** – Light / Dark / System (follows the device), chosen from the
+  brightness icon in the top bar and remembered across launches.
 - **Offline & private** – all data is stored locally with Room; no network, no
   accounts.
 

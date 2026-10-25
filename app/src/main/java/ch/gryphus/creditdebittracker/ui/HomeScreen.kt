@@ -13,6 +13,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.BrightnessMedium
 import androidx.compose.material.icons.filled.Payments
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -49,15 +50,23 @@ fun HomeScreen(
     val credit by vm.totalCredit.collectAsStateWithLifecycle()
     val debit by vm.totalDebit.collectAsStateWithLifecycle()
     val symbol by vm.currencySymbol.collectAsStateWithLifecycle()
+    val themeMode by vm.themeMode.collectAsStateWithLifecycle()
 
     var showAddPerson by rememberBool()
     var showCurrency by rememberBool()
+    var showTheme by rememberBool()
 
     Scaffold(
         topBar = {
             TopAppBar(
                 title = { Text("Credit · Debit", fontWeight = FontWeight.Bold) },
                 actions = {
+                    IconButton(onClick = { showTheme = true }) {
+                        Icon(
+                            Icons.Default.BrightnessMedium,
+                            contentDescription = "Appearance",
+                        )
+                    }
                     TextButton(onClick = { showCurrency = true }) { Text(symbol.trim()) }
                 },
             )
@@ -107,6 +116,13 @@ fun HomeScreen(
         CurrencyDialog(
             onPick = { vm.setCurrency(it); showCurrency = false },
             onDismiss = { showCurrency = false },
+        )
+    }
+    if (showTheme) {
+        ThemeDialog(
+            current = themeMode,
+            onPick = { vm.setThemeMode(it); showTheme = false },
+            onDismiss = { showTheme = false },
         )
     }
 }

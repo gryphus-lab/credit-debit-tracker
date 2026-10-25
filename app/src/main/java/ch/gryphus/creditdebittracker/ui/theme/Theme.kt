@@ -7,6 +7,7 @@ import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
+import ch.gryphus.creditdebittracker.data.ThemeMode
 
 // High-contrast, flat palette in the spirit of the CallSimulator app:
 // near-black surfaces, a confident green for "owed to you" (credit) and a clear
@@ -35,9 +36,14 @@ private val LightColors = lightColorScheme(
 
 @Composable
 fun CreditDebitTheme(
-    darkTheme: Boolean = isSystemInDarkTheme(),
+    themeMode: ThemeMode = ThemeMode.SYSTEM,
     content: @Composable () -> Unit,
 ) {
+    val darkTheme = when (themeMode) {
+        ThemeMode.SYSTEM -> isSystemInDarkTheme()
+        ThemeMode.LIGHT -> false
+        ThemeMode.DARK -> true
+    }
     MaterialTheme(
         colorScheme = if (darkTheme) DarkColors else LightColors,
         typography = Typography(),
