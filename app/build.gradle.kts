@@ -24,6 +24,10 @@ android {
     }
 
     buildTypes {
+        debug {
+            // Produce JaCoCo coverage from JVM unit tests (consumed by SonarCloud).
+            enableUnitTestCoverage = true
+        }
         release {
             isMinifyEnabled = true
             isShrinkResources = true
