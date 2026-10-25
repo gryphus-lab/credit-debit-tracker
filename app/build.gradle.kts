@@ -1,22 +1,22 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
-    // AGP 8.x + standalone Kotlin + Compose compiler + KSP (Room), all pinned to
-    // the same Kotlin version via the catalog.
+    // AGP 9 built-in Kotlin (android.builtInKotlin=true): no standalone
+    // kotlin.android plugin. Compose compiler + KSP (Room) still applied.
     alias(libs.plugins.android.application)
-    alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.ksp)
 }
 
 android {
     namespace = "ch.gryphus.creditdebittracker"
-    compileSdk = 36
+    // core 1.19.x / compose 1.12.x / nav 2.10.x require compiling against API 37.
+    compileSdk = 37
 
     defaultConfig {
         applicationId = "ch.gryphus.creditdebittracker"
         minSdk = 26
-        targetSdk = 36
+        targetSdk = 37
         versionCode = 1
         versionName = "1.0"
 
