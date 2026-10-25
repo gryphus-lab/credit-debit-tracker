@@ -8,7 +8,7 @@
 # extension model breaks the standalone Kotlin 2.2 plugin.
 agp = "8.13.2"
 kotlin = "2.4.21"
-ksp = "2.2.21-2.0.5"
+ksp = "2.3.12"
 sonarqube = "7.5.0.8588"
 
 # AndroidX core / lifecycle / activity. Pinned to versions compatible with
