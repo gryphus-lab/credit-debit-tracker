@@ -1,0 +1,55 @@
+# Toolchain for CreditDebitTracker (Android app, Android Gradle Plugin 9.x).
+# JDK 21 (LTS) runs the build; the app's bytecode target stays Java 17.
+# Run `mise install` once, then `mise trust`.
+
+[tools]
+java = "temurin-21"
+
+[env]
+ANDROID_HOME = "{{ env.HOME }}/Library/Android/sdk"
+
+[tasks.assemble-debug]
+description = "Build the debug APK (app/build/outputs/apk/debug/app-debug.apk)"
+run = [
+  "./gradlew assembleDebug",
+  "echo 'APK: app/build/outputs/apk/debug/app-debug.apk'",
+]
+
+[tasks.install-debug]
+description = "Build + install the debug APK on the connected device"
+run = '''
+adb="$ANDROID_HOME/platform-tools/adb"
+count=$("$adb" devices | awk 'NR>1 && $2=="device"' | wc -l | tr -d ' ')
+if [ "$count" -eq 0 ]; then
+  echo "No Android device/emulator is connected and ready." >&2
+  echo "  1. Enable Developer options + USB debugging on the phone." >&2
+  echo "  2. Connect via USB and accept the 'Allow USB debugging?' prompt." >&2
+  echo "  3. Verify with: mise run devices" >&2
+  exit 1
+fi
+./gradlew installDebug
+'''
+
+[tasks.devices]
+description = "List connected Android devices (adb)"
+run = "$ANDROID_HOME/platform-tools/adb devices"
+
+[tasks.uninstall-debug]
+description = "Uninstall the app from the connected device"
+run = "$ANDROID_HOME/platform-tools/adb uninstall ch.gryphus.creditdebittracker"
+
+[tasks.clean]
+description = "Gradle clean"
+run = "./gradlew clean"
+
+[tasks.check]
+description = "Run lint + checks"
+run = "./gradlew check"
+
+[tasks.build]
+description = "Build the project"
+run = "./gradlew build"
+
+[tasks.test]
+description = "Run unit tests"
+run = "./gradlew test"
