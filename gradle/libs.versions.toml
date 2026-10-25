@@ -6,20 +6,20 @@
 # held at the mutually-compatible 2.2.x line, and AGP is kept on the 8.x line
 # (8.13.2) because AGP 9's built-in Kotlin is incompatible with KSP and its new
 # extension model breaks the standalone Kotlin 2.2 plugin.
-agp = "8.13.2"
-kotlin = "2.2.21"
-ksp = "2.2.21-2.0.5"
+agp = "9.4.1"
+kotlin = "2.4.21"
+ksp = "2.3.6"
 sonarqube = "7.5.0.8588"
 
 # AndroidX core / lifecycle / activity. Pinned to versions compatible with
 # AGP 8.13.2 / compileSdk 36 (newer AndroidX requires AGP 9.1+).
-coreKtx = "1.16.0"
-lifecycle = "2.9.4"
-activityCompose = "1.10.1"
+coreKtx = "1.19.1"
+lifecycle = "2.11.0"
+activityCompose = "1.13.0"
 
 # Compose. The 2025.09.x BOM targets compileSdk 35/36 and builds on AGP 8.13.
-composeBom = "2025.09.01"
-navigationCompose = "2.9.3"
+composeBom = "2026.09.00"
+navigationCompose = "2.10.2"
 
 # Room (local persistence)
 room = "2.8.5"
