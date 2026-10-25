@@ -7,7 +7,7 @@
 # (8.13.2) because AGP 9's built-in Kotlin is incompatible with KSP and its new
 # extension model breaks the standalone Kotlin 2.2 plugin.
 agp = "8.13.2"
-kotlin = "2.2.21"
+kotlin = "2.4.21"
 ksp = "2.2.21-2.0.5"
 sonarqube = "7.5.0.8588"
 
