@@ -1,0 +1,46 @@
+name: CI — Build & Test
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    env:
+      # Promoted to job level so the step `if:` can test for its presence.
+      # Empty on Dependabot / fork PRs (GitHub withholds secrets there).
+      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up mise
+        uses: jdx/mise-action@v2
+
+      - name: Lint + checks
+        run: mise run check
+      - name: Run tests
+        run: mise run test
+      - name: Assemble debug build
+        run: mise run assemble-debug
+
+      # SonarCloud needs SONAR_TOKEN, which GitHub does NOT expose to Dependabot
+      # or fork PRs; skip the scan when it's absent so those runs aren't failed
+      # by an auth error. Runs on pushes to main and internal-branch PRs once the
+      # token is configured on the repo.
+      - name: SonarQube Scan
+        if: ${{ env.SONAR_TOKEN != '' }}
+        run: ./gradlew sonar --info
