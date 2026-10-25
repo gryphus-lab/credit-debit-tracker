@@ -35,19 +35,18 @@ minimal — a couple of dialogs and tap/FAB actions, nothing to learn.
 
 | Area | Choice |
 | --- | --- |
-| Language | Kotlin 2.2.21 |
-| UI | Jetpack Compose + Material 3 (Compose BOM 2025.09.01) |
-| Navigation | Navigation-Compose |
-| Persistence | Room 2.8.5 (KSP) |
-| Build | Android Gradle Plugin 8.13.2, Gradle 9.5.1 |
-| Min / target SDK | 26 / 36 |
+| Language | Kotlin 2.4.21 |
+| UI | Jetpack Compose + Material 3 (Compose BOM 2026.09.00) |
+| Navigation | Navigation-Compose 2.10.2 |
+| Persistence | Room 2.8.5 (KSP 2.3.12) |
+| Build | Android Gradle Plugin 9.4.1, Gradle 9.6.0 |
+| Min / target / compile SDK | 26 / 37 / 37 |
 
-> **Toolchain note:** this app needs Room (KSP) + the Compose compiler, which
-> must share one Kotlin version. KSP has no Kotlin-2.4 release yet, and AGP 9's
-> built-in Kotlin is incompatible with KSP, so the project is pinned to the
-> mutually-compatible **AGP 8.13.2 + Gradle 9.5.1 + Kotlin 2.2.21** set. (The
-> sibling CallSimulator app can use AGP 9 because it has no annotation
-> processor.)
+> **Toolchain note:** the app needs Room (KSP) + the Compose compiler on one
+> Kotlin version. It runs on **AGP 9.4.1 with built-in Kotlin** (Kotlin 2.4.21);
+> Room's annotation processing uses **KSP 2.3.12** (the KSP2 line, which is
+> compatible with AGP 9's built-in Kotlin). The current AndroidX libraries
+> require AGP 9.1+ and `compileSdk 37`.
 
 ## Build & run
 

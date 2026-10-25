@@ -1,10 +1,8 @@
 // Top-level build file. Plugins are declared here (apply false) and applied in
 // the :app module, so their versions resolve from the version catalog.
 plugins {
-    // AGP 8.x line + standalone Kotlin plugin, so Room's KSP and the Compose
-    // compiler plugin can all share one pinned Kotlin version.
+    // AGP 9 with built-in Kotlin; Compose compiler + KSP applied in :app.
     alias(libs.plugins.android.application) apply false
-    alias(libs.plugins.kotlin.android) apply false
     alias(libs.plugins.kotlin.compose) apply false
     alias(libs.plugins.ksp) apply false
     alias(libs.plugins.sonarqube)
