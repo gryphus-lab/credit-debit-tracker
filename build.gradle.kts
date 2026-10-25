@@ -38,6 +38,7 @@ sonar {
                 // Android-framework data glue (Room DB/DAO/repository, prefs).
                 // The pure, tested helpers (Money, ThemeMode enum) are measured
                 // via dedicated paths below, not excluded.
+                "**/data/ContactName.kt",
                 "**/data/CurrencyManager.kt",
                 "**/data/Entities.kt",
                 "**/data/LedgerDao.kt",
