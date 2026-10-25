@@ -8,6 +8,8 @@ import ch.gryphus.creditdebittracker.data.Entry
 import ch.gryphus.creditdebittracker.data.LedgerRepository
 import ch.gryphus.creditdebittracker.data.Person
 import ch.gryphus.creditdebittracker.data.PersonWithBalance
+import ch.gryphus.creditdebittracker.data.ThemeMode
+import ch.gryphus.creditdebittracker.data.ThemePreference
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -22,6 +24,9 @@ class LedgerViewModel(app: Application) : AndroidViewModel(app) {
 
     private val _currencySymbol = MutableStateFlow(CurrencyManager.symbol(app))
     val currencySymbol: StateFlow<String> = _currencySymbol
+
+    private val _themeMode = MutableStateFlow(ThemePreference.current(app))
+    val themeMode: StateFlow<ThemeMode> = _themeMode
 
     val persons: StateFlow<List<PersonWithBalance>> =
         repo.personsWithBalance.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
@@ -42,6 +47,11 @@ class LedgerViewModel(app: Application) : AndroidViewModel(app) {
     fun setCurrency(currency: CurrencyManager.Currency) {
         CurrencyManager.setCurrency(getApplication(), currency)
         _currencySymbol.value = currency.symbol
+    }
+
+    fun setThemeMode(mode: ThemeMode) {
+        ThemePreference.setMode(getApplication(), mode)
+        _themeMode.value = mode
     }
 
     fun addPerson(name: String) = viewModelScope.launch { repo.addPerson(name) }

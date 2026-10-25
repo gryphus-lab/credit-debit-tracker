@@ -5,6 +5,8 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -20,17 +22,18 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
         setContent {
-            CreditDebitTheme {
-                AppNav()
+            val vm: LedgerViewModel = viewModel()
+            val themeMode by vm.themeMode.collectAsStateWithLifecycle()
+            CreditDebitTheme(themeMode = themeMode) {
+                AppNav(vm)
             }
         }
     }
 }
 
 @Composable
-private fun AppNav() {
+private fun AppNav(vm: LedgerViewModel) {
     val nav = rememberNavController()
-    val vm: LedgerViewModel = viewModel()
 
     NavHost(navController = nav, startDestination = "home") {
         composable("home") {
