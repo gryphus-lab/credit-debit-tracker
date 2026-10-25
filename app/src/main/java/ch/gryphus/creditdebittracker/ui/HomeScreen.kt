@@ -11,9 +11,14 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import android.Manifest
+import android.content.pm.PackageManager
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.BrightnessMedium
+import androidx.compose.material.icons.filled.Contacts
 import androidx.compose.material.icons.filled.Payments
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -30,14 +35,19 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import ch.gryphus.creditdebittracker.LedgerViewModel
+import ch.gryphus.creditdebittracker.data.ContactName
 import ch.gryphus.creditdebittracker.data.Money
 import ch.gryphus.creditdebittracker.data.PersonWithBalance
 
@@ -55,6 +65,31 @@ fun HomeScreen(
     var showAddPerson by rememberBool()
     var showCurrency by rememberBool()
     var showTheme by rememberBool()
+
+    // Name pushed into the Add-person field when a contact is picked.
+    val context = LocalContext.current
+    var pickedName by remember { mutableStateOf<String?>(null) }
+
+    // System contact picker: returns a contact URI; we read its full name.
+    val pickContact = rememberLauncherForActivityResult(
+        ActivityResultContracts.PickContact(),
+    ) { uri ->
+        if (uri != null) pickedName = ContactName.resolve(context, uri)
+    }
+    // READ_CONTACTS is needed to read the picked contact's name; request on tap.
+    val requestContactsPermission = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestPermission(),
+    ) { granted -> if (granted) pickContact.launch(null) }
+
+    fun pickContactName() {
+        if (ContextCompat.checkSelfPermission(context, Manifest.permission.READ_CONTACTS)
+            == PackageManager.PERMISSION_GRANTED
+        ) {
+            pickContact.launch(null)
+        } else {
+            requestContactsPermission.launch(Manifest.permission.READ_CONTACTS)
+        }
+    }
 
     Scaffold(
         topBar = {
@@ -108,8 +143,19 @@ fun HomeScreen(
             title = "Add person",
             label = "Name",
             confirmLabel = "Add",
-            onConfirm = { name -> vm.addPerson(name); showAddPerson = false },
-            onDismiss = { showAddPerson = false },
+            prefill = pickedName,
+            actionIcon = Icons.Default.Contacts,
+            actionDescription = "Pick from contacts",
+            onAction = { pickContactName() },
+            onConfirm = { name ->
+                vm.addPerson(name)
+                showAddPerson = false
+                pickedName = null
+            },
+            onDismiss = {
+                showAddPerson = false
+                pickedName = null
+            },
         )
     }
     if (showCurrency) {

@@ -10,11 +10,14 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -23,6 +26,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.layout.Row
@@ -38,6 +42,11 @@ fun rememberBool(initial: Boolean = false): MutableState<Boolean> =
 /**
  * A minimal single-field prompt dialog. [numeric] switches the keyboard to a
  * decimal pad. Confirm is disabled until the field is non-blank.
+ *
+ * Optionally shows a trailing [actionIcon] inside the field (e.g. "pick from
+ * contacts"); tapping it invokes [onAction]. [prefill] lets the caller push a
+ * value into the field after the dialog is open (e.g. the name returned by the
+ * contact picker) - each new non-null value replaces the field contents.
  */
 @Composable
 fun TextPromptDialog(
@@ -46,10 +55,21 @@ fun TextPromptDialog(
     confirmLabel: String,
     numeric: Boolean = false,
     initial: String = "",
+    prefill: String? = null,
+    actionIcon: ImageVector? = null,
+    actionDescription: String? = null,
+    onAction: (() -> Unit)? = null,
     onConfirm: (String) -> Unit,
     onDismiss: () -> Unit,
 ) {
     var text by rememberSaveable { mutableStateOf(initial) }
+
+    // Push an externally-supplied value (e.g. a picked contact's name) into the
+    // field whenever it changes.
+    LaunchedEffect(prefill) {
+        if (prefill != null) text = prefill
+    }
+
     AlertDialog(
         onDismissRequest = onDismiss,
         title = { Text(title) },
@@ -63,6 +83,15 @@ fun TextPromptDialog(
                     KeyboardOptions(keyboardType = KeyboardType.Decimal)
                 } else {
                     KeyboardOptions.Default
+                },
+                trailingIcon = if (actionIcon != null && onAction != null) {
+                    {
+                        IconButton(onClick = onAction) {
+                            Icon(actionIcon, contentDescription = actionDescription)
+                        }
+                    }
+                } else {
+                    null
                 },
                 modifier = Modifier.fillMaxWidth(),
             )
