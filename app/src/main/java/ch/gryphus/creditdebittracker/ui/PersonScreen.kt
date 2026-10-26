@@ -11,12 +11,13 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.FilterChip
@@ -30,10 +31,10 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.AlertDialog
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -41,7 +42,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -161,6 +161,8 @@ private fun EntryRow(
         else -> MaterialTheme.colorScheme.secondary
     }
     val signed = if (entry.isCredit) entry.amountCents else -entry.amountCents
+    var confirmDelete by remember { mutableStateOf(false) }
+
     Card(onClick = onToggle, modifier = Modifier.fillMaxWidth()) {
         ListItem(
             colors = ListItemDefaults.colors(containerColor = Color.Transparent),
@@ -182,11 +184,31 @@ private fun EntryRow(
                         fontWeight = FontWeight.Bold,
                         textDecoration = if (entry.settled) TextDecoration.LineThrough else null,
                     )
-                    IconButton(onClick = onDelete) {
-                        Icon(Icons.Default.Delete, contentDescription = "Delete entry")
+                    IconButton(onClick = { confirmDelete = true }) {
+                        Icon(
+                            Icons.Default.Delete,
+                            contentDescription = "Delete entry",
+                            tint = MaterialTheme.colorScheme.error,
+                        )
                     }
                 }
             },
+        )
+    }
+
+    if (confirmDelete) {
+        val label = entry.note.ifBlank { if (entry.isCredit) "Credit" else "Debit" }
+        AlertDialog(
+            onDismissRequest = { confirmDelete = false },
+            title = { Text("Delete entry?") },
+            text = { Text("“$label” (${Money.format(signed, symbol)}) will be removed. This can't be undone.") },
+            confirmButton = {
+                TextButton(onClick = {
+                    confirmDelete = false
+                    onDelete()
+                }) { Text("Delete") }
+            },
+            dismissButton = { TextButton(onClick = { confirmDelete = false }) { Text("Cancel") } },
         )
     }
 }
