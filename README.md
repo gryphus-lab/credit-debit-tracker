@@ -21,8 +21,43 @@ support (CHF is the default currency).
   symbol in the top bar opens the picker.
 - **Appearance** – Light / Dark / System (follows the device), chosen from the
   brightness icon in the top bar and remembered across launches.
-- **Offline & private** – all data is stored locally with Room; no network, no
-  accounts.
+- **Backup & restore** – from the cloud icon in the top bar:
+  - **Export / import a JSON file** – save the full app state (people, entries,
+    settings) to a file you choose, and restore it later. No permissions needed.
+  - **Back up / restore via Google Drive** – the same JSON is stored in Drive's
+    private *app-data* folder (hidden from the user's Drive, scope
+    `drive.appdata`). Requires one-time Google Cloud setup (see below).
+- **Offline & private** – all data is stored locally with Room; the only network
+  use is the optional Google Drive backup.
+
+## Backup format
+
+Backups are a single versioned JSON document (`BackupData`, schema v1) holding
+the theme, currency, and every person with their entries. The same format is
+used for local files and Drive, so a Drive backup can be exported to a file and
+vice-versa. Restoring **replaces** all current data (atomically at the DB
+level). The serializer tolerates unknown keys and missing optional fields, so
+backups stay forward-compatible.
+
+## Google Drive backup — one-time setup
+
+The Drive feature compiles and ships, but it can only **authenticate** once an
+OAuth client exists for this app in Google Cloud. Without it, tapping *Back up
+to Google Drive* will fail sign-in gracefully (a message, no crash). To enable:
+
+1. In the [Google Cloud console](https://console.cloud.google.com/), create (or
+   pick) a project and **enable the Google Drive API**.
+2. Configure the **OAuth consent screen** (External; add yourself as a test
+   user while it's unverified). The app only requests the
+   `.../auth/drive.appdata` scope.
+3. Create an **OAuth 2.0 Client ID → Android**, with:
+   - Package name: `ch.gryphus.creditdebittracker`
+   - SHA-1 of your signing cert:
+     `keytool -list -v -keystore <your.keystore> -alias <alias>`
+     (use the debug keystore's SHA-1 for debug builds:
+     `~/.android/debug.keystore`, alias `androiddebugkey`, password `android`).
+4. No client-ID value needs to go in the app for an Android OAuth client —
+   Google matches the package + SHA-1 at sign-in time.
 
 ## Design
 

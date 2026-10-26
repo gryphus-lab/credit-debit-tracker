@@ -4,6 +4,7 @@ import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
+import androidx.room.Transaction
 import androidx.room.Update
 import kotlinx.coroutines.flow.Flow
 
@@ -48,6 +49,37 @@ interface LedgerDao {
 
     @Delete
     suspend fun deleteEntry(entry: Entry)
+
+    // --- Backup: export (read all) + import (atomic replace) ---------------
+
+    @Query("SELECT * FROM person ORDER BY name COLLATE NOCASE ASC")
+    suspend fun allPersons(): List<Person>
+
+    @Query("SELECT * FROM entry WHERE personId = :personId ORDER BY createdAt ASC")
+    suspend fun entriesForOnce(personId: Long): List<Entry>
+
+    @Query("DELETE FROM entry")
+    suspend fun clearEntries()
+
+    @Query("DELETE FROM person")
+    suspend fun clearPersons()
+
+    /**
+     * Replace all data with a restored set. Runs in one transaction so a failed
+     * restore can't leave the database half-wiped. [people] maps each person to
+     * the entries to insert for them; ids are assigned fresh.
+     */
+    @Transaction
+    suspend fun replaceAll(people: List<Pair<Person, List<Entry>>>) {
+        clearEntries()
+        clearPersons()
+        for ((person, entries) in people) {
+            val newId = insertPerson(person.copy(id = 0))
+            for (entry in entries) {
+                insertEntry(entry.copy(id = 0, personId = newId))
+            }
+        }
+    }
 }
 
 /** Projection row for [LedgerDao.personsWithBalance]. */

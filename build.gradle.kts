@@ -1,9 +1,10 @@
 // Top-level build file. Plugins are declared here (apply false) and applied in
 // the :app module, so their versions resolve from the version catalog.
 plugins {
-    // AGP 9 with built-in Kotlin; Compose compiler + KSP applied in :app.
+    // AGP 9 with built-in Kotlin; Compose compiler + serialization + KSP in :app.
     alias(libs.plugins.android.application) apply false
     alias(libs.plugins.kotlin.compose) apply false
+    alias(libs.plugins.kotlin.serialization) apply false
     alias(libs.plugins.ksp) apply false
     alias(libs.plugins.sonarqube)
 }
@@ -45,6 +46,11 @@ sonar {
                 "**/data/LedgerDatabase.kt",
                 "**/data/LedgerRepository.kt",
                 "**/data/ThemePreference.kt",
+                // Backup glue: @Serializable DTOs + the Drive REST/Sign-In
+                // client (both Android/network, not JVM-testable). The pure
+                // BackupSerializer IS tested and stays measured.
+                "**/data/backup/BackupModels.kt",
+                "**/data/backup/DriveBackup.kt",
                 "**/databinding/**",
             ).joinToString(","),
         )
