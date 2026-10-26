@@ -5,6 +5,7 @@ plugins {
     // kotlin.android plugin. Compose compiler + KSP (Room) still applied.
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.ksp)
 }
 
@@ -70,6 +71,10 @@ dependencies {
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.room.ktx)
     ksp(libs.androidx.room.compiler)
+
+    // Backup: JSON serialization + Google Sign-In (Drive OAuth token).
+    implementation(libs.kotlinx.serialization.json)
+    implementation(libs.play.services.auth)
 
     debugImplementation(libs.androidx.compose.ui.tooling)
 

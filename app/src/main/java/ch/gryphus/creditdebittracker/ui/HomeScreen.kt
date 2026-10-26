@@ -18,6 +18,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.BrightnessMedium
+import androidx.compose.material.icons.filled.CloudSync
 import androidx.compose.material.icons.filled.Contacts
 import androidx.compose.material.icons.filled.Payments
 import androidx.compose.material3.Card
@@ -30,10 +31,13 @@ import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -65,10 +69,59 @@ fun HomeScreen(
     var showAddPerson by rememberBool()
     var showCurrency by rememberBool()
     var showTheme by rememberBool()
+    var showBackup by rememberBool()
 
     // Name pushed into the Add-person field when a contact is picked.
     val context = LocalContext.current
     var pickedName by remember { mutableStateOf<String?>(null) }
+
+    // One-shot backup/restore result messages shown via snackbar.
+    val snackbar = remember { SnackbarHostState() }
+    LaunchedEffect(Unit) {
+        vm.messages.collect { snackbar.showSnackbar(it) }
+    }
+
+    // Local JSON export: user picks where to create the file, we write into it.
+    val exportFile = rememberLauncherForActivityResult(
+        ActivityResultContracts.CreateDocument(ch.gryphus.creditdebittracker.data.backup.BackupSerializer.MIME_TYPE),
+    ) { uri ->
+        if (uri != null) {
+            vm.exportToStream { json ->
+                context.contentResolver.openOutputStream(uri)?.use { it.write(json.toByteArray()) }
+                    ?: error("Couldn't open the chosen file")
+            }
+        }
+    }
+    // Local JSON import: user picks a backup file, we read + restore it.
+    val importFile = rememberLauncherForActivityResult(
+        ActivityResultContracts.OpenDocument(),
+    ) { uri ->
+        if (uri != null) {
+            val text = context.contentResolver.openInputStream(uri)
+                ?.use { it.readBytes().toString(Charsets.UTF_8) }
+            if (text != null) vm.importFromText(text)
+        }
+    }
+
+    // Google Sign-In for Drive; pendingDriveAction is run once we have an account.
+    var pendingDriveBackup by remember { mutableStateOf(false) }
+    val driveSignIn = rememberLauncherForActivityResult(
+        ActivityResultContracts.StartActivityForResult(),
+    ) { result ->
+        val account = vm.drive.accountFromResult(result.data)
+        if (account != null) {
+            if (pendingDriveBackup) vm.backupToDrive(account) else vm.restoreFromDrive(account)
+        }
+    }
+    fun driveAction(backup: Boolean) {
+        pendingDriveBackup = backup
+        val existing = vm.drive.lastAccount()
+        if (existing != null) {
+            if (backup) vm.backupToDrive(existing) else vm.restoreFromDrive(existing)
+        } else {
+            driveSignIn.launch(vm.drive.signInIntent())
+        }
+    }
 
     // System contact picker: returns a contact URI; we read its full name.
     val pickContact = rememberLauncherForActivityResult(
@@ -92,10 +145,14 @@ fun HomeScreen(
     }
 
     Scaffold(
+        snackbarHost = { SnackbarHost(snackbar) },
         topBar = {
             TopAppBar(
                 title = { Text("Credit · Debit", fontWeight = FontWeight.Bold) },
                 actions = {
+                    IconButton(onClick = { showBackup = true }) {
+                        Icon(Icons.Default.CloudSync, contentDescription = "Backup & restore")
+                    }
                     IconButton(onClick = { showTheme = true }) {
                         Icon(
                             Icons.Default.BrightnessMedium,
@@ -169,6 +226,18 @@ fun HomeScreen(
             current = themeMode,
             onPick = { vm.setThemeMode(it); showTheme = false },
             onDismiss = { showTheme = false },
+        )
+    }
+    if (showBackup) {
+        BackupDialog(
+            onExport = { showBackup = false; exportFile.launch(vm.suggestedFileName()) },
+            onImport = {
+                showBackup = false
+                importFile.launch(arrayOf(ch.gryphus.creditdebittracker.data.backup.BackupSerializer.MIME_TYPE, "text/*"))
+            },
+            onDriveBackup = { showBackup = false; driveAction(backup = true) },
+            onDriveRestore = { showBackup = false; driveAction(backup = false) },
+            onDismiss = { showBackup = false },
         )
     }
 }
