@@ -53,3 +53,4 @@ yarn-error.*
 
 # Machine-specific Android SDK path - must not be committed
 local.properties
+gradle/gradle-daemon-jvm.properties
