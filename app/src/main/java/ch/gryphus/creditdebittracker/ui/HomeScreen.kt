@@ -54,7 +54,6 @@ import ch.gryphus.creditdebittracker.LedgerViewModel
 import ch.gryphus.creditdebittracker.data.ContactName
 import ch.gryphus.creditdebittracker.data.Money
 import ch.gryphus.creditdebittracker.data.PersonWithBalance
-import com.google.android.gms.auth.api.signin.GoogleSignIn
 
 @Composable
 fun HomeScreen(
@@ -109,7 +108,7 @@ fun HomeScreen(
     val driveSignIn = rememberLauncherForActivityResult(
         ActivityResultContracts.StartActivityForResult(),
     ) { result ->
-        val account = GoogleSignIn.getSignedInAccountFromIntent(result.data).result
+        val account = vm.drive.accountFromResult(result.data)
         if (account != null) {
             if (pendingDriveBackup) vm.backupToDrive(account) else vm.restoreFromDrive(account)
         }
@@ -120,8 +119,7 @@ fun HomeScreen(
         if (existing != null) {
             if (backup) vm.backupToDrive(existing) else vm.restoreFromDrive(existing)
         } else {
-            val client = GoogleSignIn.getClient(context, vm.drive.signInOptions())
-            driveSignIn.launch(client.signInIntent)
+            driveSignIn.launch(vm.drive.signInIntent())
         }
     }
 

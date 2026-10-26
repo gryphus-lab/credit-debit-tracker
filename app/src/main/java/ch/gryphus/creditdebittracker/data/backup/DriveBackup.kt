@@ -1,3 +1,10 @@
+// Google Sign-In (GoogleSignIn / GoogleSignInOptions / GoogleSignInAccount) is
+// deprecated in favour of Credential Manager, but it remains the supported,
+// working way to obtain a Drive OAuth token; migrating is a large separate
+// effort. This is a deliberate choice, so suppress the deprecation (S1874)
+// file-wide rather than sprinkling per-call annotations.
+@file:Suppress("DEPRECATION")
+
 package ch.gryphus.creditdebittracker.data.backup
 
 import android.accounts.Account
@@ -8,6 +15,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.Scopes
 import com.google.android.gms.common.api.Scope
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.json.JSONObject
@@ -30,7 +38,11 @@ import java.net.URLEncoder
  *   configured (no OAuth client for this package + signing cert), sign-in
  *   simply fails and the UI reports it cleanly rather than crashing.
  */
-class DriveBackup(private val context: Context) {
+class DriveBackup(
+    private val context: Context,
+    // Injected (not hardcoded) so the dispatcher is overridable/testable.
+    private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO,
+) {
 
     companion object {
         private const val BACKUP_NAME = "credit-debit-backup.json"
@@ -41,17 +53,31 @@ class DriveBackup(private val context: Context) {
     }
 
     /** Sign-in options requesting the app-data Drive scope. */
-    fun signInOptions(): GoogleSignInOptions =
+    private fun signInOptions(): GoogleSignInOptions =
         GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
             .requestEmail()
             .requestScopes(Scope(Scopes.DRIVE_APPFOLDER))
             .build()
 
+    /** The already-signed-in account, if any (no UI). */
     fun lastAccount(): GoogleSignInAccount? = GoogleSignIn.getLastSignedInAccount(context)
+
+    /**
+     * Intent that launches the Google account chooser. The UI starts this with
+     * an activity-result launcher and passes the result data back to
+     * [accountFromResult]. Keeping all Google Sign-In (deprecated-API) calls in
+     * this class means the UI never touches the deprecated surface directly.
+     */
+    fun signInIntent(): android.content.Intent =
+        GoogleSignIn.getClient(context, signInOptions()).signInIntent
+
+    /** Resolve a signed-in account from the sign-in activity result, or null. */
+    fun accountFromResult(data: android.content.Intent?): GoogleSignInAccount? =
+        GoogleSignIn.getSignedInAccountFromIntent(data).result
 
     /** Upload (create or overwrite) the backup into the Drive app-data folder. */
     suspend fun upload(account: GoogleSignInAccount, json: String): Result<Unit> =
-        withContext(Dispatchers.IO) {
+        withContext(ioDispatcher) {
             runCatching {
                 val token = accessToken(account)
                 val existingId = findBackupId(token)
@@ -62,7 +88,7 @@ class DriveBackup(private val context: Context) {
 
     /** Download the latest backup JSON from the app-data folder, or null if none. */
     suspend fun download(account: GoogleSignInAccount): Result<String?> =
-        withContext(Dispatchers.IO) {
+        withContext(ioDispatcher) {
             runCatching {
                 val token = accessToken(account)
                 val id = findBackupId(token) ?: return@runCatching null
