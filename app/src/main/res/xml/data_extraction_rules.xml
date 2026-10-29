@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  No automatic backup/transfer of app data. The ledger is private financial
+  data; the app provides its own explicit backup (local JSON file + Google
+  Drive), so cloud-backup and device-to-device transfer are both disabled.
+-->
+<data-extraction-rules>
+    <cloud-backup>
+        <exclude domain="root" path="." />
+    </cloud-backup>
+    <device-transfer>
+        <exclude domain="root" path="." />
+    </device-transfer>
+</data-extraction-rules>
