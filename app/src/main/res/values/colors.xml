@@ -1,11 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="white">#FFFFFFFF</color>
-    <color name="call_green">#FF4CAF50</color>
-    <color name="call_red">#FFF44336</color>
-    <color name="call_background">#FF1A1A2E</color>
-    <color name="call_surface">#FF16213E</color>
-    <color name="accent_blue">#FF0F3460</color>
-    <color name="text_secondary">#B3FFFFFF</color>
-    <color name="button_ripple">#33FFFFFF</color>
+    <!-- Adaptive launcher-icon background. (All UI colours come from the Compose
+         Material 3 theme, not XML resources.) -->
+    <color name="icon_background">#FF4CAF50</color>
 </resources>
