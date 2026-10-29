@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Full-backup content rules for Android 11 (API 30) and below. Mirrors
+  data_extraction_rules.xml (API 31+): the app manages its own backup (local
+  JSON + Google Drive), so OS auto-backup of the private ledger is disabled by
+  excluding everything. allowBackup=false already disables it; this is declared
+  to satisfy lint's pairing requirement for minSdk 26.
+-->
+<full-backup-content>
+    <exclude domain="root" path="." />
+</full-backup-content>
