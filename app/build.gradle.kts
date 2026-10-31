@@ -39,8 +39,8 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
+        sourceCompatibility = JavaVersion.VERSION_21
+        targetCompatibility = JavaVersion.VERSION_21
     }
     buildFeatures {
         compose = true
@@ -49,8 +49,18 @@ android {
 
 kotlin {
     compilerOptions {
-        jvmTarget = JvmTarget.JVM_17
+        jvmTarget = JvmTarget.JVM_21
     }
+
+    // Provision a Java 21 toolchain for ALL JVM work (javac, Kotlin, Lint),
+    // independent of whichever JDK runs the Gradle daemon. Locally the daemon
+    // is temurin-21 (mise), but GitHub's default-setup CodeQL autobuild drives
+    // Gradle on its own bundled JDK 17 - a JDK 17 javac cannot emit Java 21
+    // bytecode ("invalid source release: 21"), and Lint refuses to run below
+    // the target version. The toolchain makes Gradle fetch/use a JDK 21 for
+    // those tasks regardless of the daemon. Auto-provisioning is served by the
+    // foojay resolver configured in settings.gradle.kts.
+    jvmToolchain(21)
 }
 
 dependencies {
