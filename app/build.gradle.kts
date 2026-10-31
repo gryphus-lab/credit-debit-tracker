@@ -1,4 +1,23 @@
+import com.android.build.api.variant.impl.VariantOutputImpl
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
+// --- Semantic version (single source of truth) ------------------------------
+// MAJOR.MINOR.PATCH, baselined at 1.0.0 with the initial release (PR #1) and
+// advanced per merged PR using the policy in VERSIONING.md:
+//   feat  -> MINOR     fix -> PATCH     breaking (feat!/BREAKING CHANGE) -> MAJOR
+//   dependabot: build-tooling/patch/security bump -> PATCH; a bump that changes
+//   shipped-app capability -> MINOR; a breaking shipped-runtime bump -> MAJOR.
+// History 1.0.0 -> 1.1.0(#2) -> 1.1.1(#3) -> 1.1.2(#4) -> 1.2.0(#9) ->
+//   1.3.0(#10) -> 1.3.1(#11) -> 1.4.0(#12) -> 1.5.0(#13) -> 1.5.1(#14) ->
+//   1.5.2(#15) -> 1.5.3(#16). Bump this line on every release.
+val appVersionName = "1.5.3"
+
+// Monotonic integer derived from the semantic version: MAJOR*10000 +
+// MINOR*100 + PATCH. Allows up to 99 minors / 99 patches per band and always
+// increases as the semver does, so Android's install/upgrade check is happy.
+val appVersionCode = appVersionName.split(".").let { (maj, min, patch) ->
+    maj.toInt() * 10000 + min.toInt() * 100 + patch.toInt()
+}
 
 plugins {
     // AGP 9 built-in Kotlin (android.builtInKotlin=true): no standalone
@@ -18,8 +37,8 @@ android {
         applicationId = "ch.gryphus.creditdebittracker"
         minSdk = 26
         targetSdk = 37
-        versionCode = 1
-        versionName = "1.0"
+        versionCode = appVersionCode
+        versionName = appVersionName
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -44,6 +63,21 @@ android {
     }
     buildFeatures {
         compose = true
+    }
+}
+
+// --- APK naming -------------------------------------------------------------
+// Rename the default "app-<buildType>.apk" to "<project>-<version>-<buildType>.apk"
+// (e.g. CreditDebitTracker-1.5.3-debug.apk / -release.apk) so every artifact
+// self-identifies by app + semantic version. Uses the AGP variant API.
+androidComponents {
+    onVariants { variant ->
+        val baseName = rootProject.name // "CreditDebitTracker"
+        variant.outputs.forEach { output ->
+            (output as? VariantOutputImpl)?.outputFileName?.set(
+                "$baseName-$appVersionName-${variant.buildType}.apk",
+            )
+        }
     }
 }
 
