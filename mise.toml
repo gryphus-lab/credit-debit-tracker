@@ -1,5 +1,6 @@
 # Toolchain for CreditDebitTracker (Android app, Android Gradle Plugin 9.x).
-# JDK 21 (LTS) runs the build; the app's bytecode target stays Java 17.
+# JDK 21 (LTS) runs the build; the app's bytecode target is Java 21 too,
+# provisioned via a Gradle toolchain so it's correct regardless of the daemon.
 # Run `mise install` once, then `mise trust`.
 
 [tools]
