@@ -6,7 +6,7 @@
 # AndroidX libraries (which require AGP 9.1+ / compileSdk 37) resolve. Built-in
 # Kotlin is disabled (see gradle.properties) because KSP isn't compatible with
 # it, so the standalone Kotlin plugin is applied instead.
-agp = "9.4.1"
+agp = "9.5.0"
 kotlin = "2.4.21"
 ksp = "2.3.12"
 sonarqube = "7.5.0.8588"
