@@ -15,9 +15,9 @@ buildscript {
             "com.google.guava:guava:33.7.2-jre",          // Dependabot #58 (high)
             "org.apache.commons:commons-lang3:3.18.0",     // Dependabot #57 (medium)
             "org.apache.httpcomponents:httpclient:4.5.14", // Dependabot #56 (medium)
-            "org.bouncycastle:bcprov-jdk18on:1.85",        // Dependabot #54 (critical), #55 (high)
-            "org.bouncycastle:bcpkix-jdk18on:1.85",        // keep BC family aligned
-            "org.bouncycastle:bcutil-jdk18on:1.85",        // keep BC family aligned
+            "org.bouncycastle:bcprov-jdk18on:1.86",        // Dependabot #54 (critical), #55 (high)
+            "org.bouncycastle:bcpkix-jdk18on:1.86",        // keep BC family aligned
+            "org.bouncycastle:bcutil-jdk18on:1.86",        // keep BC family aligned
         )
     }
 }
