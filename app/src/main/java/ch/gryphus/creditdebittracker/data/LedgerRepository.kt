@@ -31,12 +31,14 @@ class LedgerRepository(context: Context) {
         note: String,
         amountCents: Long,
         isCredit: Boolean,
+        entryDate: Long,
     ): Long = dao.insertEntry(
         Entry(
             personId = personId,
             note = note.trim(),
             amountCents = amountCents,
             isCredit = isCredit,
+            entryDate = entryDate,
         ),
     )
 
@@ -57,6 +59,7 @@ class LedgerRepository(context: Context) {
                         amountCents = e.amountCents,
                         isCredit = e.isCredit,
                         settled = e.settled,
+                        entryDate = e.entryDate,
                         createdAt = e.createdAt,
                     )
                 },
@@ -83,6 +86,13 @@ class LedgerRepository(context: Context) {
                     amountCents = be.amountCents,
                     isCredit = be.isCredit,
                     settled = be.settled,
+                    // Old backups (schema v1) have no entryDate; fall back to
+                    // createdAt, then to now, so a date is always present.
+                    entryDate = when {
+                        be.entryDate > 0 -> be.entryDate
+                        be.createdAt > 0 -> be.createdAt
+                        else -> System.currentTimeMillis()
+                    },
                     createdAt = if (be.createdAt > 0) be.createdAt else System.currentTimeMillis(),
                 )
             }

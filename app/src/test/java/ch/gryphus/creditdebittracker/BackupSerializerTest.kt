@@ -20,8 +20,14 @@ class BackupSerializerTest {
             BackupPerson(
                 name = "Ada",
                 entries = listOf(
-                    BackupEntry("Lunch", 1234, isCredit = true, settled = false, createdAt = 1L),
-                    BackupEntry("Taxi", 500, isCredit = false, settled = true, createdAt = 2L),
+                    BackupEntry(
+                        "Lunch", 1234, isCredit = true, settled = false,
+                        entryDate = 1_690_000_000_000L, createdAt = 1L,
+                    ),
+                    BackupEntry(
+                        "Taxi", 500, isCredit = false, settled = true,
+                        entryDate = 1_695_000_000_000L, createdAt = 2L,
+                    ),
                 ),
             ),
             BackupPerson(name = "Grace", entries = emptyList()),
@@ -42,6 +48,34 @@ class BackupSerializerTest {
         assertTrue(json.contains("\"currencyCode\": \"CHF\""))
         assertTrue(json.contains("\"name\": \"Ada\""))
         assertTrue(json.contains("\"amountCents\": 1234"))
+        assertTrue(json.contains("\"entryDate\": 1690000000000"))
+    }
+
+    @Test
+    fun entryDate_roundTrips() {
+        val back = BackupSerializer.decode(BackupSerializer.encode(sample()))
+        val first = back?.people?.first()?.entries?.first()
+        assertEquals(1_690_000_000_000L, first?.entryDate)
+    }
+
+    @Test
+    fun decode_v1Backup_defaultsEntryDateToZero() {
+        // A v1 backup predates entryDate; it must still decode, with entryDate
+        // defaulting to 0 (import then falls back to createdAt / now).
+        val json = """
+            {
+              "version": 1,
+              "currencyCode": "CHF",
+              "people": [
+                { "name": "Bob", "entries": [
+                  { "note": "x", "amountCents": 10, "isCredit": true, "createdAt": 42 }
+                ] }
+              ]
+            }
+        """.trimIndent()
+        val entry = BackupSerializer.decode(json)?.people?.first()?.entries?.first()
+        assertEquals(0L, entry?.entryDate)
+        assertEquals(42L, entry?.createdAt)
     }
 
     @Test
