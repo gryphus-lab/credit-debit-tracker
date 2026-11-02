@@ -18,8 +18,12 @@ data class BackupData(
     val people: List<BackupPerson> = emptyList(),
 ) {
     companion object {
-        /** Bump when the backup schema changes in a non-additive way. */
-        const val CURRENT_VERSION = 1
+        /**
+         * Bump when the backup schema changes. v2 adds [BackupEntry.entryDate];
+         * it is an additive, optional field so v1 backups still restore (missing
+         * entryDate falls back to createdAt - see LedgerRepository.importBackup).
+         */
+        const val CURRENT_VERSION = 2
     }
 }
 
@@ -35,5 +39,8 @@ data class BackupEntry(
     val amountCents: Long,
     val isCredit: Boolean,
     val settled: Boolean = false,
+    // User-chosen transaction date (epoch millis). Added in backup v2; defaults
+    // to 0 for older backups, which import falls back from.
+    val entryDate: Long = 0L,
     val createdAt: Long = 0L,
 )

@@ -40,6 +40,11 @@ data class Entry(
     val amountCents: Long,
     val isCredit: Boolean,
     val settled: Boolean = false,
+    // When the transaction happened, as chosen by the user via the date picker
+    // (UTC-midnight epoch millis). Distinct from [createdAt], which is the audit
+    // timestamp of when the row was logged. Rows migrated from schema v1 default
+    // entryDate to their createdAt.
+    val entryDate: Long = System.currentTimeMillis(),
     val createdAt: Long = System.currentTimeMillis(),
 ) {
     /** Signed contribution to the balance; settled entries contribute nothing. */

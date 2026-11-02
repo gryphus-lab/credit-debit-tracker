@@ -67,8 +67,15 @@ class LedgerViewModel(app: Application) : AndroidViewModel(app) {
     fun addPerson(name: String) = viewModelScope.launch { repo.addPerson(name) }
     fun deletePerson(person: Person) = viewModelScope.launch { repo.deletePerson(person) }
 
-    fun addEntry(personId: Long, note: String, amountCents: Long, isCredit: Boolean) =
-        viewModelScope.launch { repo.addEntry(personId, note, amountCents, isCredit) }
+    fun addEntry(
+        personId: Long,
+        note: String,
+        amountCents: Long,
+        isCredit: Boolean,
+        entryDate: Long,
+    ) = viewModelScope.launch {
+        repo.addEntry(personId, note, amountCents, isCredit, entryDate)
+    }
 
     fun toggleSettled(entry: Entry) = viewModelScope.launch { repo.toggleSettled(entry) }
     fun deleteEntry(entry: Entry) = viewModelScope.launch { repo.deleteEntry(entry) }

@@ -32,7 +32,7 @@ interface LedgerDao {
     @Query("SELECT * FROM person WHERE id = :id")
     fun person(id: Long): Flow<Person?>
 
-    @Query("SELECT * FROM entry WHERE personId = :personId ORDER BY createdAt DESC")
+    @Query("SELECT * FROM entry WHERE personId = :personId ORDER BY entryDate DESC, createdAt DESC")
     fun entriesFor(personId: Long): Flow<List<Entry>>
 
     @Insert
@@ -55,7 +55,7 @@ interface LedgerDao {
     @Query("SELECT * FROM person ORDER BY name COLLATE NOCASE ASC")
     suspend fun allPersons(): List<Person>
 
-    @Query("SELECT * FROM entry WHERE personId = :personId ORDER BY createdAt ASC")
+    @Query("SELECT * FROM entry WHERE personId = :personId ORDER BY entryDate ASC, createdAt ASC")
     suspend fun entriesForOnce(personId: Long): List<Entry>
 
     @Query("DELETE FROM entry")
