@@ -10,7 +10,7 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 // History 1.0.0 -> 1.1.0(#2) -> 1.1.1(#3) -> 1.1.2(#4) -> 1.2.0(#9) ->
 //   1.3.0(#10) -> 1.3.1(#11) -> 1.4.0(#12) -> 1.5.0(#13) -> 1.5.1(#14) ->
 //   1.5.2(#15) -> 1.5.3(#16). Bump this line on every release.
-val appVersionName = "1.5.7"
+val appVersionName = "1.5.8"
 
 // Monotonic integer derived from the semantic version: MAJOR*10000 +
 // MINOR*100 + PATCH. Allows up to 99 minors / 99 patches per band and always
