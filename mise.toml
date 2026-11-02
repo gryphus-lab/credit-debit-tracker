@@ -54,3 +54,18 @@ run = "./gradlew build"
 [tasks.test]
 description = "Run unit tests"
 run = "./gradlew test"
+
+[tasks.verify-metadata]
+description = "Regenerate gradle/verification-metadata.xml (run after any dependency change, e.g. a Dependabot bump)"
+# Generated from an empty Gradle home so the file captures the exact artifact
+# set a fresh CI runner resolves (warm-cache generation misses plugin-classpath
+# artifacts and fails verification on a clean machine).
+run = '''
+TMPGH="$(mktemp -d)"
+GRADLE_USER_HOME="$TMPGH" ./gradlew --write-verification-metadata sha256 \
+  buildEnvironment :app:buildEnvironment \
+  :app:assembleDebug :app:assembleRelease :app:lintDebug :app:testDebugUnitTest \
+  :app:createDebugUnitTestCoverageReport --rerun-tasks
+rm -rf "$TMPGH"
+echo "Regenerated gradle/verification-metadata.xml"
+'''
