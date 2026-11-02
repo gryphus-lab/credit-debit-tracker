@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Monochrome launcher layer for Android 13+ themed icons. A single-colour
+  silhouette (the OS recolours it): just the distinctive up/down arrow pair
+  (credit in / debit out), drawn in black so the system tint stays legible.
+  The card is omitted on purpose - a filled card would swallow the arrows
+  once everything is one colour.
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- Up-arrow (credit). -->
+    <path
+        android:fillColor="#000000"
+        android:pathData="M43,70 v-13 h-6 l9,-11 l9,11 h-6 v13 z" />
+    <!-- Down-arrow (debit). -->
+    <path
+        android:fillColor="#000000"
+        android:pathData="M62,38 v13 h6 l-9,11 l-9,-11 h6 v-13 z" />
+</vector>
