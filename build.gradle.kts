@@ -12,7 +12,7 @@
 buildscript {
     configurations.all {
         resolutionStrategy.force(
-            "com.google.guava:guava:33.7.2-jre",          // Dependabot #58 (high)
+            "com.google.guava:guava:33.8.0-jre",          // Dependabot #58 (high)
             "org.apache.commons:commons-lang3:3.21.0",     // Dependabot #57 (medium)
             "org.apache.httpcomponents:httpclient:4.5.14", // Dependabot #56 (medium)
             "org.bouncycastle:bcprov-jdk18on:1.86",        // Dependabot #54 (critical), #55 (high)
