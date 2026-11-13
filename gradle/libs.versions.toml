@@ -8,7 +8,7 @@
 # it, so the standalone Kotlin plugin is applied instead.
 agp = "9.5.0"
 kotlin = "2.4.21"
-ksp = "2.3.12"
+ksp = "2.3.13"
 sonarqube = "7.5.0.8588"
 
 # AndroidX core / lifecycle / activity (current releases; require AGP 9.1+ and
