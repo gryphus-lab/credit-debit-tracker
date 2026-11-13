@@ -27,7 +27,7 @@ room = "2.8.5"
 # Backup: JSON serialization + Google Drive (Sign-In for OAuth; Drive is called
 # over its REST API with plain HttpURLConnection, so no heavy api-client libs).
 kotlinxSerialization = "1.12.0"
-playServicesAuth = "21.3.0"
+playServicesAuth = "22.0.0"
 
 # Test
 junit = "4.13.2"
