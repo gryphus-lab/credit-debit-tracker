@@ -16,7 +16,7 @@ buildscript {
             "org.apache.commons:commons-lang3:3.21.0",     // Dependabot #57 (medium)
             "org.apache.httpcomponents:httpclient:4.5.14", // Dependabot #56 (medium)
             "org.bouncycastle:bcprov-jdk18on:1.86",        // Dependabot #54 (critical), #55 (high)
-            "org.bouncycastle:bcpkix-jdk18on:1.86",        // keep BC family aligned
+            "org.bouncycastle:bcpkix-jdk18on:1.87",        // keep BC family aligned
             "org.bouncycastle:bcutil-jdk18on:1.86",        // keep BC family aligned
         )
     }
