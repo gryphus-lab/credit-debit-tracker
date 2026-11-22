@@ -55,5 +55,7 @@ Starting from `1.0.0` (the initial release, PR #1), each subsequent PR merged to
 | #14 | Resolve SonarCloud main issues | fix → PATCH | 1.5.1 |
 | #15 | Clear Dependabot build-classpath alerts | fix (security) → PATCH | 1.5.2 |
 | #16 | Sync JVM bytecode target 17 → 21 | fix → PATCH | 1.5.3 |
+| … | PRs #17–#29 (features + dependency maintenance) | mixed | 1.6.4 |
+| #31 | Bump kotlinx-serialization-json 1.12.0 → 1.13.0 (runtime lib, routine maintenance) | dep → PATCH | 1.6.5 |
 
-**Current version: `1.5.3`** (`versionCode 10503`).
+**Current version: `1.6.5`** (`versionCode 10605`).
