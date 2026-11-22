@@ -58,5 +58,6 @@ Starting from `1.0.0` (the initial release, PR #1), each subsequent PR merged to
 | … | PRs #17–#29 (features + dependency maintenance) | mixed | 1.6.4 |
 | #31 | Bump kotlinx-serialization-json 1.12.0 → 1.13.0 (runtime lib, routine maintenance) | dep → PATCH | 1.6.5 |
 | #32 | Bump bcpkix-jdk18on 1.86 → 1.87 (build-classpath pin) | dep (build) → PATCH | 1.6.6 |
+| #33 | Bump bcprov-jdk18on 1.86 → 1.87 (build-classpath pin) | dep (build) → PATCH | 1.6.7 |
 
-**Current version: `1.6.6`** (`versionCode 10606`).
+**Current version: `1.6.7`** (`versionCode 10607`).
